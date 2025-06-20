@@ -1,0 +1,241 @@
+.dashboard-container {
+  padding: 40px 20px;
+  background-color: rgb(255, 237, 213);
+  min-height: 100vh;
+}
+.dashboard-container h1{
+  text-align: center;
+  color: rgb(154, 52, 18);
+  font-family: "Inter", sans-serif;
+  font-size: 2rem;
+}
+.mentor-profile-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.mentor-profile-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 15px;
+  background: rgb(255, 237, 213);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.detail-link {
+  color: #7c2d12;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .mentor-profile-details {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mentor-profile {
+  background: white;
+  max-width: 1200px;
+  margin: 0 auto 40px;
+  padding: 30px;
+  border-radius: 12px;
+  display: flex;
+  gap: 40px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mentor-profile-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.mentor-profile-photo {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #7c2d12;
+}
+
+.mentor-profile-edit {
+  background-color: #7c2d12;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+
+.mentor-profile-right {
+  flex-grow: 1;
+}
+
+.mentor-profile-header {
+  display: flex;
+  align-items: baseline;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.mentor-profile-name {
+  color: #7c2d12;
+  margin: 0;
+  font-size: 2.2rem;
+}
+
+.mentor-profile-status {
+  background-color: rgba(124, 45, 18, 0.1);
+  color: #7c2d12;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* .mentor-profile-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
+}
+
+.mentor-profile-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+} */
+
+.detail-label {
+  color: #666;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.detail-value {
+  color: #333;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.domain-pill {
+  background-color: rgba(124, 45, 18, 0.1);
+  color: #7c2d12;
+  padding: 6px 15px;
+  border-radius: 15px;
+  width: fit-content;
+}
+
+.applications-sections {
+  display: grid;
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.status-section {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.status-header {
+  color: #7c2d12;
+  font-family: "Inter", sans-serif;
+  margin-bottom: 25px;
+  font-size: 1.5rem;
+  border-bottom: 2px solid #f5b041;
+  padding-bottom: 10px;
+}
+
+.carousel-container {
+  position: relative;
+  padding: 0 40px;
+  margin: 0 -20px;
+}
+
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #7c2d12;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  z-index: 10;
+}
+
+.carousel-arrow:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.carousel-arrow.left {
+  left: 0;
+}
+
+.carousel-arrow.right {
+  right: 0;
+}
+
+.applications-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  padding: 0 10px;
+}
+
+.no-applications {
+  text-align: center;
+  color: #666;
+  padding: 20px;
+  font-style: italic;
+}
+
+@media (max-width: 1200px) {
+  .applications-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .mentor-profile {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .mentor-profile-header {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* .mentor-profile-details {
+    grid-template-columns: 1fr;
+  } */
+
+  .domain-pill {
+    margin: 0 auto;
+  }
+
+  .applications-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .carousel-arrow {
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+  }
+}

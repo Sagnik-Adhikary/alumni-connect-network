@@ -1,0 +1,314 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  username String  @unique
+  email    String  @unique
+  password String? // LinkedIn sign-ins may have null password
+  role     Role //will prolly create issue in linkedIn signup
+
+  student          Student?
+  alumni           Alumni?
+  mentor           Mentor?
+  createdGroups    Group[]
+  groups           UserGroup[]
+  mentorships      Mentorship[]
+  registeredEvents UserEvent[]
+}
+
+model Student {
+  id         Int    @id @default(autoincrement())
+  fullName   String
+  cgpa       Float
+  cv         String // Drive link for resume
+  department String
+  rollno     String
+  domain     Domain
+
+  experiences  StudentExperience[]
+  applications InternApplication[]
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @unique
+}
+
+model Alumni {
+  id                Int    @id @default(autoincrement())
+  fullName          String
+  presentCompany    String
+  yearsOfExperience Int
+  domain            Domain
+
+  pastExperiences   AlumniExperience[]
+  postedInternships Internship[]
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @unique
+}
+
+model Mentor {
+  id     Int  @id @default(autoincrement())
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @unique
+
+  keywords    Domain[] // Sectors of interest (e.g., AI, Blockchain, Startup, etc.)
+  experience  Int? // Years of experience
+  interaction InteractionLevel? // Level of interaction (hours per month)
+
+  maxMentees     Int? @default(5) // Maximum mentees they can take
+  currentMentees Int? @default(0) // Current mentees count
+
+  levelsOfMentees MenteeLevel[] // Allowed mentee levels
+  interests       MentorInterest[] // Type of mentorship support they provide
+
+  linkedinProfile     String?
+  currentOrganization String?
+  passingYear         Int?
+  availabilityStatus  mentorAvailability @default(AVAILABLE)
+  mentorships         Mentorship[]
+}
+
+model Mentorship {
+  id        Int      @id @default(autoincrement())
+  mentor    Mentor   @relation(fields: [mentorId], references: [id])
+  mentorId  Int
+  mentee    User     @relation(fields: [menteeId], references: [id])
+  menteeId  Int
+  createdAt DateTime @default(now())
+
+  status MentorshipStatus @default(PENDING)
+
+  @@unique([mentorId, menteeId]) // Prevent duplicate mentorship requests
+}
+
+model Group {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+
+  groupCreatedBy   User @relation(fields: [groupCreatedById], references: [id])
+  groupCreatedById Int
+
+  members UserGroup[]
+}
+
+model UserGroup {
+  id      Int   @id @default(autoincrement())
+  user    User  @relation(fields: [userId], references: [id])
+  userId  Int
+  group   Group @relation(fields: [groupId], references: [id])
+  groupId Int
+
+  role GroupRole @default(MEMBER)
+
+  //unque connections
+  @@unique([userId, groupId])
+}
+
+model StudentExperience {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String
+  techStacks  String[]
+  startDate   DateTime?
+  endDate     DateTime?
+
+  student   Student @relation(fields: [studentId], references: [id])
+  studentId Int
+}
+
+model AlumniExperience {
+  id          Int       @id @default(autoincrement())
+  company     String
+  role        String
+  startDate   DateTime
+  endDate     DateTime?
+  description String?
+
+  alumni   Alumni @relation(fields: [alumniId], references: [id])
+  alumniId Int
+}
+
+model Internship {
+  id           Int                @id @default(autoincrement())
+  company      String?
+  title        String
+  jd           String
+  jdType       JobDescriptionType @default(TEXT)
+  domain       Domain
+  location     String // ONLINE or any city name
+  compensation String
+  duration     String
+  startTime    DateTime
+  endTime      DateTime
+  criteria     String // Eligibility based on year of study
+  weeklyHours  String? // Optional - Weekly time commitment
+  closed       Boolean            @default(false)
+  createdAt    DateTime           @default(now())
+
+  postedBy   Alumni @relation(fields: [postedById], references: [id])
+  postedById Int
+
+  applications InternApplication[]
+}
+
+model InternApplication {
+  id        Int               @id @default(autoincrement())
+  status    ApplicationStatus @default(PENDING)
+  appliedAt DateTime          @default(now())
+
+  student   Student @relation(fields: [studentId], references: [id])
+  studentId Int
+
+  internship   Internship @relation(fields: [internshipId], references: [id])
+  internshipId Int
+
+  // Composite unique constraint to prevent duplicate applications
+  @@unique([studentId, internshipId])
+}
+
+model Event {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String
+  date        DateTime
+  startTime   DateTime? // only needed for upcoming events
+  endTime     DateTime? // optional
+  location    String? // virtual link or physical location
+  mode        EventMode // VIRTUAL / OFFLINE / HYBRID
+  type        EventType // UPCOMING / PAST
+
+  attendeesCount Int         @default(0)
+  registrations  UserEvent[]
+  links          EventLink[]
+
+  createdAt DateTime @default(now())
+}
+
+model EventLink {
+  id    Int    @id @default(autoincrement())
+  label String // e.g., "Resources", "View Gallery"
+  url   String
+
+  event   Event @relation(fields: [eventId], references: [id])
+  eventId Int
+}
+
+model UserEvent {
+  id     Int  @id @default(autoincrement())
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  event   Event @relation(fields: [eventId], references: [id])
+  eventId Int
+
+  registeredAt DateTime @default(now())
+
+  @@unique([userId, eventId]) // Prevent duplicate registrations
+}
+
+enum JobDescriptionType {
+  TEXT
+  URL
+}
+
+enum EventMode {
+  VIRTUAL
+  OFFLINE
+  HYBRID
+}
+
+enum EventType {
+  UPCOMING
+  PAST
+}
+
+enum Role {
+  STUDENT
+  ALUMNI
+}
+
+enum Domain {
+  SOFTWARE
+  FRONTEND
+  BACKEND
+  PRODUCT_MANAGEMENT
+  WEB_DEVELOPMENT
+  MOBILE_DEVELOPMENT
+  MACHINE_LEARNING
+  DATA_SCIENCE
+  BLOCKCHAIN
+  CLOUD_COMPUTING
+  CYBERSECURITY
+  BUSINESS_MANAGEMENT
+  FINANCE
+  ACCOUNTING
+  HUMAN_RESOURCES
+  MARKETING
+  SALES
+  OPERATIONS
+  STRATEGY
+  PROJECT_MANAGEMENT
+  SUPPLY_CHAIN_MANAGEMENT
+  CONSULTING
+  ENTREPRENEURSHIP
+  BUSINESS_DEVELOPMENT
+  BUSINESS_ANALYTICS
+  ECONOMICS
+  PUBLIC_RELATIONS
+}
+
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum InteractionLevel {
+  VERY_LOW // 0-3 hours per month
+  MODERATE // 3-8 hours per month
+  HIGH // 8+ hours per month
+}
+
+enum MenteeLevel {
+  SECOND_YEAR
+  THIRD_YEAR
+  FOURTH_YEAR
+  FIFTH_YEAR
+  RESEARCH
+}
+
+enum MentorInterest {
+  PRO_BONO_HELP
+  MENTORING_AND_PARTNERSHIP
+  INVESTING
+  HELPING_IN_NETWORKING
+  FLOATING_OWN_PROJECTS
+}
+
+enum MentorshipStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  REJECTED
+}
+
+enum GroupRole {
+  MEMBER
+  ADMIN
+  OWNER
+}
+
+enum mentorAvailability {
+  AVAILABLE
+  BUSY
+  UNAVAILABLE
+}
